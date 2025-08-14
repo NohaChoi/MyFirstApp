@@ -11,17 +11,20 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun ratedImageDao(): RatedImageDao
 
     companion object {
+        // This map will hold a different database instance for each folder.
         @Volatile
-        private var INSTANCE: AppDatabase? = null
+        private var INSTANCES = mutableMapOf<String, AppDatabase>()
 
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
+        fun getDatabase(context: Context, dbName: String): AppDatabase {
+            // Return the existing instance for this folder if it exists.
+            return INSTANCES[dbName] ?: synchronized(this) {
+                // If not, create a new database with the folder-specific name.
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "image_ranker_database"
+                    dbName
                 ).build()
-                INSTANCE = instance
+                INSTANCES[dbName] = instance
                 instance
             }
         }
