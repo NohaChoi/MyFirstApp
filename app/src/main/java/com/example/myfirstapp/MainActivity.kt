@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import java.util.Stack
 import kotlin.math.roundToInt
 
-// FIXED: Added the missing constants for rating modes
+// These constants were missing
 const val HIGH_ELO_THRESHOLD = 1500
 const val ELITE_TIER_THRESHOLD = 1800
 
@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private var lastPair: Pair<RatedImage, RatedImage>? = null
     private val undoStack = Stack<Pair<RatedImage, RatedImage>>()
     private var selectedMode = "standard"
+
 
     // --- Database ---
     private var database: AppDatabase? = null
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // --- UI Click Listeners ---
         binding.leftImageView.setOnClickListener { rateImage(0) }
         binding.rightImageView.setOnClickListener { rateImage(1) }
         binding.openFolderButton.setOnClickListener { folderPickerLauncher.launch(null) }
@@ -77,7 +79,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadImagesFromFolder(folderUri: Uri) {
         val folderName = getFolderName(folderUri) ?: "default_ratings"
-        // This now correctly calls the updated getDatabase function
         database = AppDatabase.getDatabase(this, "ratings_$folderName.db")
 
         lifecycleScope.launch {
@@ -129,7 +130,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getFolderName(uri: Uri): String? {
-        return uri.lastPathSegment?.substringAfterLast(':')
+        return uri.lastPathSegment?.substringAfterLast(':')?.replace('/', '_')
     }
 
     private fun fetchNextPair() {
@@ -168,9 +169,6 @@ class MainActivity : AppCompatActivity() {
         displayPair()
     }
 
-    /**
-     * FIXED: This function's filter logic is now correct.
-     */
     private fun getCurrentImagePool(): List<RatedImage> {
         return when (selectedMode) {
             "high_elo" -> imageList.filter { it.playerStats.rating >= HIGH_ELO_THRESHOLD }
