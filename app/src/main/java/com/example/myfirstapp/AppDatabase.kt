@@ -15,6 +15,7 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCES = mutableMapOf<String, AppDatabase>()
 
+        // FIXED: This function now correctly accepts a dbName parameter.
         fun getDatabase(context: Context, dbName: String): AppDatabase {
             // Return the existing instance for this folder if it exists.
             return INSTANCES[dbName] ?: synchronized(this) {

@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     private val undoStack = Stack<Pair<RatedImage, RatedImage>>()
     private var selectedMode = "standard"
 
-
     // --- Database ---
     private var database: AppDatabase? = null
 
@@ -57,7 +56,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // --- UI Click Listeners ---
         binding.leftImageView.setOnClickListener { rateImage(0) }
         binding.rightImageView.setOnClickListener { rateImage(1) }
         binding.openFolderButton.setOnClickListener { folderPickerLauncher.launch(null) }
@@ -79,6 +77,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadImagesFromFolder(folderUri: Uri) {
         val folderName = getFolderName(folderUri) ?: "default_ratings"
+        // This now correctly calls the updated getDatabase function
         database = AppDatabase.getDatabase(this, "ratings_$folderName.db")
 
         lifecycleScope.launch {
